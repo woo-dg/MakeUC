@@ -1,0 +1,851 @@
+<!-- messages.html -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messages | Skill Exchange Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Reset default margins and paddings */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f0f2f5;
+    }
+
+
+    .chat-container {
+      width: 100%;
+      max-width: 1000px;
+      height: 90vh;
+      padding: 20px;
+      background: #ffffff;
+      border: 2px solid #a80606; /* Black frame */
+      border-radius: 20px; /* Rounded edges */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+
+    /* Tinted Background Overlay */
+    .chat-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.05); /* Slight tint */
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+
+    /* Chat Header */
+    .chat-header {
+      display: flex;
+      justify-content: center; /* Center the text */
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #a73225; /* Darker background */
+      border-radius: 15px; /* Rounded edges */
+      color: #ffffff;
+      font-size: 1.2em;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+
+    .chat-header #chat-with {
+      flex: 1;
+      text-align: center; /* Center the text within the header */
+    }
+
+
+    .chat-header button {
+      position: absolute;
+      left: 10px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 1.5em;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+
+    .chat-header button:hover {
+      color: #bdc3c7;
+    }
+
+
+    /* Chat Messages */
+    .chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #f9f9f9;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+
+    .message {
+      display: flex;
+      margin: 10px 0;
+      align-items: flex-end;
+    }
+
+
+    .message.sent {
+      justify-content: flex-end;
+    }
+
+
+    .message.received {
+      justify-content: flex-start;
+    }
+
+
+    /* Avatar Styling with Initials */
+    .message .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin: 0 10px;
+      background-color: #000000; /* Black background */
+      color: #ffffff; /* White text */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+
+    .message.sent .avatar {
+      display: none; /* Hide avatar for sent messages */
+    }
+
+
+    /* Message Content */
+    .message-content {
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      font-size: 1em;
+      line-height: 1.4;
+      position: relative;
+      background-color: #e5e5ea;
+      color: #333;
+    }
+
+
+    .message.sent .message-content {
+      background-color: #a73225;
+      color: #fff;
+      border-bottom-right-radius: 5px;
+    }
+
+
+    .message.received .message-content {
+      background-color: #e5e5ea;
+      color: #333;
+      border-bottom-left-radius: 5px;
+    }
+
+
+    /* Style for image messages */
+    .message-content img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 5px;
+    }
+
+
+    /* Input Area */
+    .chat-input-container {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      /* Removed background and border to eliminate the white box */
+      background: transparent;
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+    }
+
+
+    .chat-input {
+      flex: 1;
+      padding: 10px 15px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+      background: #f0f2f5; /* Light gray background */
+      color: #333; /* Dark text color for better contrast */
+      transition: border-color 0.3s;
+    }
+
+
+    .chat-input::placeholder {
+      color: #b3b3b3; /* Lighter placeholder text */
+    }
+
+
+    .chat-input:focus {
+      border-color: #3498db;
+    }
+
+
+    .button-group {
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+      position: relative; /* For positioning the emoji dropdown */
+    }
+
+
+    /* Updated Button Styles to Mimic Instagram */
+    .attach-button, .emoji-button, .send-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5em;
+      margin-left: 10px; /* Increased spacing for better alignment */
+      color: #333333; /* Dark gray color for better contrast */
+      transition: color 0.3s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .attach-button:hover, .emoji-button:hover, .send-button:hover {
+      color: #a73225; /* Instagram-like blue on hover */
+      transform: scale(1.1); /* Slight enlargement on hover */
+    }
+
+
+    /* SVG Icon Styling - Updated for Instagram Look */
+    .attach-button svg, .send-button svg, .emoji-button svg {
+      width: 24px;
+      height: 24px;
+      fill: #333333; /* Default icon color */
+      transition: fill 0.3s;
+    }
+
+
+    .attach-button:hover svg, .emoji-button:hover svg, .send-button:hover svg {
+      fill: #0084ff; /* Change icon color on hover */
+    }
+
+
+    /* Enhanced Send Button Styling */
+    .send-button-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
+    .send-button {
+      background-color: #a73225; /* Bright blue background */
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .send-button:hover {
+      background-color: #006bbd; /* Darker blue on hover */
+      transform: scale(1.05); /* Slight enlargement on hover */
+    }
+
+
+    .send-button svg {
+      width: 20px;
+      height: 20px;
+      fill: #ffffff; /* White icon color */
+      transition: fill 0.3s;
+    }
+
+
+    /* Emoji Dropdown */
+    .emoji-dropdown {
+      position: absolute;
+      bottom: 60px; /* Adjusted position above the input area */
+      left: 0;
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      display: none; /* Hidden by default */
+      z-index: 2;
+    }
+
+
+    .emoji-dropdown.visible {
+      display: flex;
+      flex-wrap: wrap;
+      width: 220px;
+    }
+
+
+    .emoji-dropdown button {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      margin: 5px;
+      transition: transform 0.2s;
+    }
+
+
+    .emoji-dropdown button:hover {
+      transform: scale(1.2);
+    }
+
+
+    /* Scrollbar Styling */
+    .chat-messages::-webkit-scrollbar {
+      width: 6px;
+    }
+
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+
+    /* Notification Styling */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #2ecc71;
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      display: none;
+      z-index: 1001;
+      font-family: 'Roboto', sans-serif;
+    }
+
+
+    .notification.error {
+      background: #e74c3c;
+    }
+
+
+    /* Responsive Adjustments */
+    @media (max-width: 450px) {
+      .chat-container {
+        width: 95%;
+        height: 95vh;
+      }
+
+
+      .chat-header {
+        font-size: 1em;
+        border-radius: 10px;
+      }
+
+
+      .chat-header button {
+        font-size: 1.2em;
+      }
+
+
+      .send-button, .attach-button, .emoji-button {
+        font-size: 1.2em;
+      }
+
+
+      .attach-button svg, .send-button svg, .emoji-button svg {
+        width: 20px;
+        height: 20px;
+      }
+
+
+      .send-button-container {
+        padding: 4px;
+      }
+
+
+      .emoji-dropdown {
+        width: 150px;
+      }
+
+
+      .emoji-dropdown button {
+        font-size: 1.2em;
+        margin: 3px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <!-- Chat Header with Back Button and Centered Title -->
+    <div class="chat-header">
+      <button id="back-to-dashboard" aria-label="Back">
+        &#8592;
+      </button>
+      <span id="chat-with">Chat with User</span>
+    </div>
+
+
+    <!-- Chat Messages -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- Messages will be dynamically added here -->
+    </div>
+
+
+    <!-- Chat Input Container with Attach, Emoji, and Send Buttons -->
+    <div class="chat-input-container">
+      <input type="text" id="chat-input" class="chat-input" placeholder="Type a message...">
+      <div class="button-group">
+        <!-- Emoji Button -->
+        <button id="emoji-button" class="emoji-button" aria-label="Choose Emoji">
+          <!-- Emoji SVG Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48
+            10 10 10 10-4.48 10-10S17.52
+            2 12 2zm-1.5 15h-1v-1.5h1V17zm2.5
+            0h-1v-1.5h1V17zm-2.5-3.5c-2.33
+            0-4.31-1.46-5.11-3.5h10.22c-.8
+            2.04-2.78 3.5-5.11 3.5zm-5.5-4c0
+            1.66 1.34 3 3 3s3-1.34
+            3-3-1.34-3-3-3-3 1.34-3
+            3zm6 0c0 1.66 1.34 3 3 3s3-1.34
+            3-3-1.34-3-3-3-3 1.34-3
+            3z"/>
+          </svg>
+        </button>
+
+
+        <!-- Emoji Dropdown -->
+        <div id="emoji-dropdown" class="emoji-dropdown">
+          <!-- Add more emojis as needed -->
+          <button type="button">😀</button>
+          <button type="button">😂</button>
+          <button type="button">😍</button>
+          <button type="button">👍</button>
+          <button type="button">🎉</button>
+          <button type="button">🙏</button>
+          <button type="button">🔥</button>
+          <button type="button">😢</button>
+          <button type="button">🤔</button>
+          <button type="button">😘</button>
+          <button type="button">😁</button>
+          <button type="button">😎</button>
+        </div>
+
+
+        <!-- Attach Button -->
+        <button id="attach-button" class="attach-button" aria-label="Attach File">
+          <!-- Paperclip SVG Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M21.44 11.05l-9.19 9.19a5 5 0 0 1-7.07-7.07l1.41-1.41a3 3 0 0 0 4.24
+            4.24l-8.49-8.49a1 1 0 0 1 1.41-1.41l8.49
+            8.49a1 1 0 0 1-1.41 1.41l-1.41-1.41a1 1 0
+            0 0-1.41 1.41l9.19 9.19a7 7 0 0 0
+            9.9-9.9l-9.19-9.19a1 1 0 0 0-1.41
+            1.41l8.49 8.49a5 5 0 0 1-7.07 7.07z"/>
+          </svg>
+        </button>
+
+
+        <!-- Enhanced Send Button -->
+        <div class="send-button-container">
+          <button id="send-button" class="send-button" aria-label="Send Message">
+            <!-- Modern Paper Plane SVG Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M2.01 21L23 12 2.01 3v7l15
+              2-15 2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+  </div>
+
+
+  <!-- Custom Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Profiles Array to map usernames to full names
+      const profiles = [
+        { username: "user1", fullName: "Alice Johnson" },
+        { username: "user2", fullName: "Bob Smith" },
+        { username: "user3", fullName: "Carol Williams" },
+        { username: "user4", fullName: "David Lee" },
+        { username: "user5", fullName: "Eve Martinez" },
+        { username: "user6", fullName: "Frank Thompson" },
+        { username: "user7", fullName: "Grace Kim" },
+        { username: "user8", fullName: "Henry Baker" },
+        { username: "user9", fullName: "Isabella Green" },
+        { username: "user10", fullName: "Jack White" },
+        { username: "user11", fullName: "Katherine Brown" },
+        { username: "user12", fullName: "Liam Patel" },
+        { username: "user13", fullName: "Maya Singh" },
+        { username: "user14", fullName: "Noah Clark" },
+      ];
+
+
+      // Function to retrieve query parameters
+      function getQueryParams() {
+        const params = {};
+        window.location.search.substring(1).split("&").forEach(pair => {
+          const [key, value] = pair.split("=");
+          if (key) {
+            params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+          }
+        });
+        return params;
+      }
+
+
+      const queryParams = getQueryParams();
+      const chatUsername = queryParams.username;
+      let chatFullName = 'User'; // Default value
+
+
+      if (chatUsername) {
+        const profile = profiles.find(p => p.username === chatUsername);
+        if (profile) {
+          chatFullName = profile.fullName;
+        }
+      }
+
+
+      // Function to get initials from full name
+      function getInitials(name) {
+        const names = name.trim().split(' ');
+        let initials = names[0].charAt(0);
+        if (names.length > 1) {
+          initials += names[names.length - 1].charAt(0);
+        }
+        return initials.toUpperCase();
+      }
+
+
+      // Set chat header to show who the conversation is with
+      const chatWith = document.getElementById('chat-with');
+      if (chatWith) {
+        chatWith.textContent = `Chat with ${chatFullName}`;
+      }
+
+
+      // Key for storing/retrieving messages from localStorage
+      const chatKey = `chat_${getCurrentUser()}_${chatUsername}`;
+
+
+      // Function to get the current user (assumes 'currentUser' is stored in localStorage)
+      function getCurrentUser() {
+        return localStorage.getItem('currentUser') || 'currentUser'; // Default to 'currentUser' if not set
+      }
+
+
+      // Messages array to store current conversation's messages
+      let messages = loadMessages();
+
+
+      // Predefined replies in specific order
+      const predefinedReplies = [
+        "Yes of course! When are you available?",
+        "Looking forward to our session!",
+        "Feel free to ask any questions.",
+      ];
+
+
+      // Counter to track the next reply to send
+      let replyCounter = getLastReplyCounter();
+
+
+      // Function to load messages from localStorage
+      function loadMessages() {
+        const storedMessages = JSON.parse(localStorage.getItem(chatKey)) || [
+          { type: 'received', content: 'Hey! Happy to help!', avatar: chatFullName },
+        ];
+        return storedMessages;
+      }
+
+
+      // Function to save messages to localStorage
+      function saveMessages() {
+        localStorage.setItem(chatKey, JSON.stringify(messages));
+      }
+
+
+      // Function to get the last reply counter from localStorage
+      function getLastReplyCounter() {
+        const counter = parseInt(localStorage.getItem(`${chatKey}_replyCounter`), 10);
+        return isNaN(counter) ? 0 : counter;
+      }
+
+
+      // Function to save the reply counter to localStorage
+      function saveReplyCounter() {
+        localStorage.setItem(`${chatKey}_replyCounter`, replyCounter);
+      }
+
+
+      // Function to render messages in the chat
+      const chatMessages = document.getElementById('chat-messages');
+      function renderMessages() {
+        if (chatMessages) {
+          chatMessages.innerHTML = '';
+          messages.forEach((message) => {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${message.type}`;
+
+
+            // Create avatar element if received
+            let avatarHTML = '';
+            if (message.type === 'received') {
+              const initials = getInitials(chatFullName);
+              avatarHTML = `<div class="avatar">${initials}</div>`;
+            }
+
+
+            // Determine if the message content is an image
+            let contentHTML = '';
+            if (message.isImage) {
+              contentHTML = `<img src="${sanitizeHTML(message.content)}" alt="Attached Image">`;
+            } else {
+              contentHTML = sanitizeHTML(message.content);
+            }
+
+
+            messageElement.innerHTML = `
+              ${avatarHTML}
+              <div class="message-content">${contentHTML}</div>
+            `;
+            chatMessages.appendChild(messageElement);
+          });
+          // Scroll to the bottom
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+      }
+
+
+      // Simple sanitization to prevent XSS
+      function sanitizeHTML(str) {
+        var temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+      }
+
+
+      // Render initial messages
+      renderMessages();
+
+
+      // Handle send button click
+      const sendButton = document.getElementById('send-button');
+      const chatInput = document.getElementById('chat-input');
+
+
+      if (sendButton && chatInput) {
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            sendMessage();
+          }
+        });
+      }
+
+
+      // Handle attach button click
+      const attachButton = document.getElementById('attach-button');
+      if (attachButton) {
+        attachButton.addEventListener('click', () => {
+          // Create a hidden file input
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.accept = 'image/*'; // Accept only image files
+
+
+          // When a file is selected, handle it here
+          fileInput.onchange = () => {
+            const file = fileInput.files[0];
+            if (file) {
+              // Check if the file is an image
+              if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                  const imageData = e.target.result;
+                  // Add the image as a sent message
+                  messages.push({ type: 'sent', content: imageData, isImage: true });
+                  saveMessages();
+                  renderMessages();
+                  simulateReply();
+                };
+                reader.readAsDataURL(file);
+              } else {
+                // For non-image files, display the file name as a sent message
+                messages.push({ type: 'sent', content: `You attached: ${file.name}` });
+                saveMessages();
+                renderMessages();
+                simulateReply();
+              }
+            }
+          };
+
+
+          // Trigger the file input
+          fileInput.click();
+        });
+      }
+
+
+      // Handle emoji button and dropdown
+      const emojiButton = document.getElementById('emoji-button');
+      const emojiDropdown = document.getElementById('emoji-dropdown');
+
+
+      if (emojiButton && emojiDropdown) {
+        emojiButton.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent event from bubbling up
+          emojiDropdown.classList.toggle('visible');
+        });
+
+
+        // Add event listeners to each emoji
+        const emojiButtons = emojiDropdown.querySelectorAll('button');
+        emojiButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const emoji = btn.textContent;
+            if (emoji) {
+              messages.push({ type: 'sent', content: emoji });
+              saveMessages();
+              renderMessages();
+              simulateReply();
+              emojiDropdown.classList.remove('visible');
+            }
+          });
+        });
+
+
+        // Close the dropdown if clicked outside
+        document.addEventListener('click', (e) => {
+          if (!emojiDropdown.contains(e.target) && !emojiButton.contains(e.target)) {
+            emojiDropdown.classList.remove('visible');
+          }
+        });
+      }
+
+
+      function sendMessage() {
+        const messageContent = chatInput.value.trim();
+        if (messageContent) {
+          messages.push({ type: 'sent', content: messageContent });
+          saveMessages();
+          chatInput.value = '';
+          renderMessages();
+          simulateReply();
+        }
+      }
+
+
+      // Simulate a reply from the user in a specific order
+      function simulateReply() {
+        if (replyCounter < predefinedReplies.length) {
+          setTimeout(() => {
+            const reply = predefinedReplies[replyCounter];
+            messages.push({ type: 'received', content: reply, avatar: chatFullName });
+            replyCounter++;
+            saveReplyCounter();
+            saveMessages();
+            renderMessages();
+          }, 2000); // 2-second delay
+        }
+      }
+
+
+      // Handle Back Button Click - Redirect to dashboard.html
+      const backToDashboardButton = document.getElementById('back-to-dashboard');
+      if (backToDashboardButton) {
+        backToDashboardButton.addEventListener('click', () => {
+          window.location.href = 'dashboard.html'; // Redirect to dashboard.html
+        });
+      }
+
+
+      /**
+       * Function to display notifications
+       * @param {string} message - The message to display
+       * @param {string} type - 'error' or 'success'
+       */
+      function showNotification(message, type = 'success') {
+        const notification = document.getElementById('notification');
+        if (notification) {
+          notification.textContent = message;
+          notification.className = 'notification'; // Reset classes
+          if (type === 'error') {
+            notification.classList.add('error');
+          }
+          notification.style.display = 'block';
+
+
+          // Hide after 3 seconds
+          setTimeout(() => {
+            notification.style.display = 'none';
+          }, 3000);
+        }
+      }
+    });
+  </script>
+</body>  
+</html>
+
+
+

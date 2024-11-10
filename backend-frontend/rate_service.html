@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rate Service | Skill Exchange Platform</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Font Awesome for Icons (if needed) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-pO/... (replace with actual hash)"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  
+  <style>
+    /* Reusing styles from the Dashboard */
+
+    :root {
+      --primary-color: #1e1e1e;        /* Dark gray for text and accents */
+      --secondary-color: #ffffff;      /* White for backgrounds */
+      --accent-color: #ff6f61;         /* Modern accent color */
+      --text-color: #333333;           /* Dark gray for general text */
+      --background-color: #ffffff;     /* White background */
+      --button-border-color: #b71c1c;  /* Red color for button border */
+      --button-hover-bg: #b71c1c;      /* Red color for button hover background */
+      --button-hover-text: #ffffff;    /* White text on hover */
+    }
+    
+    /* Reset and Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Open Sans', sans-serif;
+      background: white; /* Clean white background */
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--secondary-color); /* Changed to white */
+      padding: 15px 30px; /* Increased horizontal padding */
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7); /* Added subtle shadow for depth */
+    }
+    
+    nav .logo a {
+      color: var(--primary-color); /* Changed to dark text */
+      font-weight: bold;
+      font-size: 24px;
+      text-decoration: none;
+    }
+    
+    nav .menu-icon {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    
+    nav .menu-icon .bar {
+      width: 25px;
+      height: 3px;
+      background-color: var(--primary-color); /* Changed to dark color */
+      margin: 4px 0;
+    }
+    
+    nav .nav-links {
+      display: flex;
+    }
+    
+    nav .nav-links a {
+      color: var(--primary-color); /* Changed to dark text */
+      font-weight: bold;
+      margin-left: 20px;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    nav .nav-links a:hover {
+      color: var(--accent-color);
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      height: 100%;
+      width: 200px;
+      position: fixed;
+      top: 0;
+      left: -250px; /* Hidden by default */
+      background-color: #f4f4f4;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+      padding-top: 60px; /* Space for the nav bar */
+      transition: left 0.3s ease;
+      overflow-y: auto;
+      z-index: 1001; /* Below the nav bar */
+    }
+
+    .sidebar.open {
+      left: 0;
+    }
+
+    .sidebar h3 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ccc; /* Underline */
+      padding-bottom: 50px;
+      position: relative;
+      overflow: hidden;
+      font-family: 'Roboto', sans-serif; /* Applied Roboto font */
+    }
+
+    /* Main Container Styling */
+    .container {
+      flex: 1;
+      padding: 100px 20px 120px 20px; /* Increased top and bottom padding */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-left: 0; /* Adjusted for sidebar */
+      transition: margin-left 0.3s ease;
+    }
+
+    .container.shifted {
+      margin-left: 250px; /* Width of the sidebar */
+    }
+
+    /* Form Container Styling */
+    .form-container {
+      background-color: #ffffff; /* White background */
+      padding: 40px; /* Increased padding */
+      border-radius: 8px; /* Clean border-radius */
+      box-shadow: 0 0 2px 4px rgba(134, 20, 20, 0.3); /* Subtle shadow */
+      max-width: 600px; /* Increased max-width */
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-container h2 {
+      color: #b71c1c; /* Deep red color for headings */
+      margin-bottom: 20px;
+      font-size: 28px;
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    /* Form Styling */
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch; /* Changed from flex-start to stretch for full-width elements */
+      width: 100%;
+      max-width: 500px; /* Set a max-width for better layout */
+      margin: 0 auto; /* Center the form horizontally */
+    }
+
+    /* Form Group Styling */
+    .form-group {
+      width: 100%;
+      margin-bottom: 20px; /* Consistent spacing between form groups */
+      display: flex;
+      flex-direction: column; /* Stack label and input vertically */
+    }
+
+    /* Label Styling */
+    .form-group label {
+      margin-bottom: 8px; /* Increased space between label and input */
+      color: #555;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    /* Input and Select Styling */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px; /* Increased padding for better usability */
+      border: 2px solid #ccc; /* Enhanced border for better visibility */
+      border-radius: 4px; /* Slight rounding for aesthetics */
+      background-color: #f9f9f9; /* Light background for inputs */
+      font-size: 14px;
+      font-family: 'Open Sans', sans-serif;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      box-sizing: border-box;
+    }
+
+    /* Specific styles for textarea to adjust placeholder alignment */
+    .form-group textarea {
+      padding-top: 10px; /* Reset padding-top */
+      line-height: 1.5; /* Ensure consistent line height */
+      height: 100px; /* Set a fixed height to control the overall size */
+      resize: vertical; /* Allow vertical resizing */
+    }
+
+    /* Focus Effects for Inputs */
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #b71c1c; /* Deep red on focus */
+      box-shadow: 0 0 5px rgba(183, 28, 28, 0.5); /* Subtle shadow on focus */
+    }
+
+    /* Placeholder Styling */
+    .form-group input::placeholder,
+    .form-group select::placeholder,
+    .form-group textarea::placeholder {
+      color: #aaa;
+      opacity: 1; /* Fully opaque */
+    }
+
+    /* Submit Button Styling */
+    .form-group.button-container {
+      display: flex;
+      justify-content: center; /* Center the button */
+    }
+
+    .submit-button {
+      padding: 12px 24px; /* Increased padding for a larger clickable area */
+      background-color: #b71c1c; /* Primary red color */
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: 'Open Sans', sans-serif;
+      transition: background-color 0.3s;
+      width: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .submit-button:hover {
+      background-color: #ff6f61; /* Lighter red on hover */
+    }
+
+    /* Notification Styling */
+    .notification {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      display: none;
+    }
+
+    .notification.success {
+      background-color: #2ecc71;
+      color: #fff;
+    }
+
+    .notification.error {
+      background-color: #e74c3c;
+      color: #fff;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .sidebar {
+        width: 200px;
+      }
+      .container.shifted {
+        margin-left: 200px;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .sidebar {
+        width: 180px;
+      }
+      .container.shifted {
+        margin-left: 180px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .sidebar {
+        width: 150px;
+      }
+      .container.shifted {
+        margin-left: 150px;
+      }
+      .form-container {
+        padding: 20px;
+      }
+      form {
+        max-width: 90%;
+      }
+      .submit-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <a href="index.html">Skill Exchange</a>
+    </div>
+    <div class="menu-icon" onclick="toggleMenu()" aria-label="Toggle navigation menu">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="profiles.html">Find Neighbors</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Sidebar for Connected Neighbors -->
+  <div class="sidebar" id="neighbors-sidebar">
+    <h3>Connected <br> Neighbors</h3>
+    <div class="connected-neighbors" id="connected-neighbors">
+      <!-- Neighbor icons will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container" id="main-container">
+    <!-- Form Container -->
+    <div class="form-container">
+      <h2>Rate Service for <span id="neighbor-name">Neighbor</span></h2>
+      <form id="rating-form">
+        <!-- Communication Rating -->
+        <div class="form-group">
+          <label for="communication">Communication:</label>
+          <select id="communication" required>
+            <option value="">Select rating</option>
+            <option value="1">1 - Very Poor</option>
+            <option value="2">2 - Poor</option>
+            <option value="3">3 - Average</option>
+            <option value="4">4 - Good</option>
+            <option value="5">5 - Excellent</option>
+          </select>
+        </div>
+
+        <!-- Reliability Rating -->
+        <div class="form-group">
+          <label for="reliability">Reliability:</label>
+          <select id="reliability" required>
+            <option value="">Select rating</option>
+            <option value="1">1 - Very Poor</option>
+            <option value="2">2 - Poor</option>
+            <option value="3">3 - Average</option>
+            <option value="4">4 - Good</option>
+            <option value="5">5 - Excellent</option>
+          </select>
+        </div>
+
+        <!-- Professionalism Rating -->
+        <div class="form-group">
+          <label for="professionalism">Professionalism:</label>
+          <select id="professionalism" required>
+            <option value="">Select rating</option>
+            <option value="1">1 - Very Poor</option>
+            <option value="2">2 - Poor</option>
+            <option value="3">3 - Average</option>
+            <option value="4">4 - Good</option>
+            <option value="5">5 - Excellent</option>
+          </select>
+        </div>
+
+        <!-- Overall Experience Rating -->
+        <div class="form-group">
+          <label for="overall">Overall Experience:</label>
+          <select id="overall" required>
+            <option value="">Select rating</option>
+            <option value="1">1 - Very Poor</option>
+            <option value="2">2 - Poor</option>
+            <option value="3">3 - Average</option>
+            <option value="4">4 - Good</option>
+            <option value="5">5 - Excellent</option>
+          </select>
+        </div>
+
+        <!-- Additional Comments -->
+        <div class="form-group">
+          <label for="comments">Additional Comments:</label>
+          <textarea id="comments" rows="4" placeholder="Write your comments here..."></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group button-container">
+          <button type="submit" class="submit-button">
+            <i class="fas fa-star"></i> Submit Rating
+          </button>
+        </div>
+      </form>
+      <div id="notification" class="notification"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2023 Skill Exchange Platform
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Retrieve currentUser from localStorage
+      const currentUser = localStorage.getItem('currentUser');
+
+      if (!currentUser) {
+        // If no user is logged in, redirect to login page
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Get neighbor username from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const neighborUsername = urlParams.get('username');
+      if (!neighborUsername) {
+        alert('No user specified for rating.');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      // Get neighbor's full name for display
+      const neighbors = JSON.parse(localStorage.getItem(`connectedNeighbors_${currentUser}`)) || [];
+      const neighbor = neighbors.find(n => n.username === neighborUsername);
+      if (!neighbor) {
+        alert('Specified user is not in your connected neighbors.');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      // Display neighbor's name
+      document.getElementById('neighbor-name').textContent = neighbor.fullName;
+
+      // Handle form submission
+      const ratingForm = document.getElementById('rating-form');
+      const notification = document.getElementById('notification');
+
+      ratingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Get rating values
+        const communication = parseInt(document.getElementById('communication').value);
+        const reliability = parseInt(document.getElementById('reliability').value);
+        const professionalism = parseInt(document.getElementById('professionalism').value);
+        const overall = parseInt(document.getElementById('overall').value);
+        const comments = document.getElementById('comments').value.trim();
+
+        // Validate ratings
+        if (![communication, reliability, professionalism, overall].every(r => r >=1 && r <=5)) {
+          showNotification('Please provide valid ratings for all questions.', 'error');
+          return;
+        }
+
+        // Create rating object
+        const rating = {
+          rater: currentUser,
+          communication,
+          reliability,
+          professionalism,
+          overall,
+          comments,
+          date: new Date().toISOString()
+        };
+
+        // Retrieve existing ratings for the neighbor
+        const existingRatings = JSON.parse(localStorage.getItem(`ratings_${neighborUsername}`)) || [];
+        
+        // Check if the current user has already rated this neighbor
+        const alreadyRated = existingRatings.find(r => r.rater === currentUser);
+        if (alreadyRated) {
+          showNotification('You have already rated this user.', 'error');
+          return;
+        }
+
+        // Add new rating
+        existingRatings.push(rating);
+        localStorage.setItem(`ratings_${neighborUsername}`, JSON.stringify(existingRatings));
+
+        // Show success notification
+        showNotification('Thank you for your feedback!', 'success');
+
+        // Redirect back to dashboard after a short delay
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 2000);
+      });
+
+      function showNotification(message, type = 'success') {
+        notification.textContent = message;
+        notification.className = 'notification'; // Reset classes
+        if (type === 'error') {
+          notification.classList.add('error');
+        } else {
+          notification.classList.add('success');
+        }
+        notification.style.display = 'block';
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 3000);
+      }
+
+      // Sidebar and Navigation Logic (if needed)
+      const menuIcon = document.querySelector('.menu-icon');
+      const navLinks = document.getElementById('navLinks');
+
+      window.toggleMenu = function() {
+        navLinks.classList.toggle('open');
+      };
+
+      window.logout = function() {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+      };
+    });
+  </script>
+</body>
+</html>

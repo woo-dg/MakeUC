@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Find Neighbors | Skill Exchange Platform</title>
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  />
+  <style>
+    /* Background Style with Cityscape Image and Tint */
+    body {
+  /* Add a linear gradient as the first background layer for the tint */
+  background: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.5), /* Adjust the color and opacity here */
+      rgba(0, 0, 0, 0.5)
+    ),
+    url('backgroundd.jpg') no-repeat center center fixed;
+  
+  background-size: cover;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+    /* Map Container Style */
+    #map {
+      height: 650px; /* Reduced height */
+      width: 1200px;  /* Reduced width */
+      border: 5px solid black; /* Black frame around the map */
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+    }
+
+    /* Back to Dashboard Button */
+    .back-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      padding: 10px 20px; /* Adjusted padding for smaller map */
+      font-size: 1em;      /* Adjusted font size */
+      color: #fff;
+      background-color: #ff6f61;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #1abc9c;
+    }
+
+    /* Search Box */
+    .search-box {
+      position: absolute;
+      top: 10px;
+      left: 60px;
+      z-index: 1000;
+      padding: 8px 12px; /* Adjusted padding */
+      background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box input {
+      width: 150px; /* Reduced width */
+      padding: 5px;
+      font-size: 0.9em; /* Reduced font size */
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      margin-right: 8px; /* Adjusted margin */
+    }
+
+    .search-box button {
+      padding: 8px 16px; /* Adjusted padding */
+      font-size: 1em;     /* Adjusted font size */
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-box button:hover {
+      background-color: #0056b3;
+    }
+
+    .category-toggle {
+      margin-left: 15px; /* Adjusted margin */
+      font-size: 0.9em;   /* Reduced font size */
+      cursor: pointer;
+    }
+
+    .category-toggle span {
+      padding: 0 10px; /* Reduced padding */
+      cursor: pointer;
+    }
+
+    .category-toggle span.selected {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 850px) {
+      #map {
+        width: 90%;
+        height: 500px;
+      }
+
+      .search-box {
+        top: 70px;
+        left: 10px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .search-box input {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 5px;
+      }
+
+      .category-toggle {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Map Container -->
+  <div id="map">
+    <!-- Back to Dashboard Button on Map -->
+    <button class="back-button" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+    <!-- Search Box -->
+    <div class="search-box">
+      <input type="text" id="skill-search" placeholder="Search for a skill...">
+      <button onclick="filterMarkers()">Search</button>
+      <div class="category-toggle">
+        <span id="skills-offered" class="selected" onclick="setCategory('offered')">Skills Offered</span> |
+        <span id="skills-wanted" onclick="setCategory('wanted')">Skills Wanted</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+  <!-- Custom Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let map;
+      let markers = [];
+      let currentCategory = 'offered';
+
+      // Function to initialize the map with given coordinates
+      function initializeMap(currentLat, currentLon) {
+        // Initialize the map centered on the user's current location
+        map = L.map('map').setView([currentLat, currentLon], 13);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add a marker for the current user
+        const userIcon = L.icon({
+          iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+        });
+
+        L.marker([currentLat, currentLon], { icon: userIcon })
+          .addTo(map)
+          .bindPopup('You are here')
+          .openPopup();
+
+        // Hardcoded nearby profiles
+        const profiles = [
+          {
+            username: "user1",
+            fullName: "Alice Johnson",
+            latitude: 43.6143,
+            longitude: -79.6956,
+            skillsOffered: "Guitar Lessons, Cooking",
+            skillsWanted: "Yoga, French Language",
+            location: "Address 1, Mississauga, ON",
+            availability: "Weekends",
+            contactPreference: "Email",
+            bio: "I love sharing my skills with the community!",
+          },
+          {
+            username: "user2",
+            fullName: "Bob Smith",
+            latitude: 43.5801,
+            longitude: -79.7169,
+            skillsOffered: "Photography, Web Design",
+            skillsWanted: "Gardening, Piano",
+            location: "Address 2, Streetsville, ON",
+            availability: "Evenings",
+            contactPreference: "Phone",
+            bio: "Excited to meet new people and learn new things.",
+          },
+          {
+            username: "user3",
+            fullName: "Carol Williams",
+            latitude: 43.6043,
+            longitude: -79.6856,
+            skillsOffered: "Painting, Sewing",
+            skillsWanted: "Coding, Public Speaking",
+            location: "Address 3, Mississauga, ON",
+            availability: "Weekdays",
+            contactPreference: "Messaging",
+            bio: "Artist looking to expand my horizons.",
+          },
+          {
+            username: "user4",
+            fullName: "David Lee",
+            latitude: 43.5654,
+            longitude: -79.7320,
+            skillsOffered: "Yoga, Meditation",
+            skillsWanted: "Cooking, Guitar",
+            location: "Address 4, Riverwood Park, Mississauga, ON",
+            availability: "Mornings",
+            contactPreference: "Email",
+            bio: "Yoga instructor passionate about healthy living.",
+          },
+          {
+            username: "user5",
+            fullName: "Eve Martinez",
+            latitude: 43.5781,
+            longitude: -79.7152,
+            skillsOffered: "French Language, Baking",
+            skillsWanted: "Photography, Painting",
+            location: "Address 5, Streetsville, ON",
+            availability: "Flexible",
+            contactPreference: "Phone",
+            bio: "Language enthusiast and avid baker.",
+          },
+          {
+            username: "user6",
+            fullName: "Frank Thompson",
+            latitude: 43.6200,
+            longitude: -79.7000,
+            skillsOffered: "Carpentry, Woodworking",
+            skillsWanted: "Plumbing, Electrical Work",
+            location: "Address 6, Mississauga, ON",
+            availability: "Weekends",
+            contactPreference: "Email",
+            bio: "Love working with wood and building things from scratch.",
+          },
+          {
+            username: "user7",
+            fullName: "Grace Kim",
+            latitude: 43.5822,
+            longitude: -79.7108,
+            skillsOffered: "Piano, Violin",
+            skillsWanted: "Gardening, Spanish",
+            location: "Address 7, Streetsville, ON",
+            availability: "Evenings",
+            contactPreference: "Phone",
+            bio: "Music teacher passionate about classical instruments.",
+          },
+          {
+            username: "user8",
+            fullName: "Henry Baker",
+            latitude: 43.5598,
+            longitude: -79.7345,
+            skillsOffered: "Cooking, Bartending",
+            skillsWanted: "Sewing, Painting",
+            location: "Address 8, Riverwood Park, Mississauga, ON",
+            availability: "Weekdays",
+            contactPreference: "Messaging",
+            bio: "Chef looking to learn more about the arts.",
+          },
+          {
+            username: "user9",
+            fullName: "Isabella Green",
+            latitude: 43.6100,
+            longitude: -79.6900,
+            skillsOffered: "Graphic Design, Drawing",
+            skillsWanted: "Public Speaking, Marketing",
+            location: "Address 9, Mississauga, ON",
+            availability: "Flexible",
+            contactPreference: "Email",
+            bio: "Freelance designer eager to improve communication skills.",
+          },
+          {
+            username: "user10",
+            fullName: "Jack White",
+            latitude: 43.5621,
+            longitude: -79.7270,
+            skillsOffered: "Fitness Training, Nutrition",
+            skillsWanted: "Yoga, Meditation",
+            location: "Address 10, Riverwood Park, Mississauga, ON",
+            availability: "Mornings",
+            contactPreference: "Phone",
+            bio: "Personal trainer with a focus on a healthy lifestyle.",
+          },
+          {
+            username: "user11",
+            fullName: "Katherine Brown",
+            latitude: 43.6080,
+            longitude: -79.6950,
+            skillsOffered: "Baking, Cake Decorating",
+            skillsWanted: "Web Design, Photography",
+            location: "Address 11, Mississauga, ON",
+            availability: "Afternoons",
+            contactPreference: "Messaging",
+            bio: "Baker who loves sharing sweet creations.",
+          },
+          {
+            username: "user12",
+            fullName: "Liam Patel",
+            latitude: 43.5805,
+            longitude: -79.7160,
+            skillsOffered: "Mathematics Tutoring, Coding",
+            skillsWanted: "Public Speaking, Gardening",
+            location: "Address 12, Streetsville, ON",
+            availability: "Evenings",
+            contactPreference: "Email",
+            bio: "Math enthusiast and coder, happy to help others learn.",
+          },
+          {
+            username: "user13",
+            fullName: "Maya Singh",
+            latitude: 43.6035,
+            longitude: -79.7050,
+            skillsOffered: "Yoga, Dance",
+            skillsWanted: "Cooking, Painting",
+            location: "Address 13, Mississauga, ON",
+            availability: "Weekends",
+            contactPreference: "Phone",
+            bio: "Dance and yoga instructor ready to learn new skills.",
+          },
+          {
+            username: "user14",
+            fullName: "Noah Clark",
+            latitude: 43.5650,
+            longitude: -79.7295,
+            skillsOffered: "Gardening, Carpentry",
+            skillsWanted: "Sewing, Cooking",
+            location: "Address 14, Riverwood Park, Mississauga, ON",
+            availability: "Flexible",
+            contactPreference: "Messaging",
+            bio: "Gardener and carpenter looking to broaden my skills.",
+          },
+        ];
+
+        // Add each nearby profile as a marker on the map
+        profiles.forEach((profile) => {
+          // Add marker to the map for each nearby user
+          const marker = L.marker([profile.latitude, profile.longitude])
+            .addTo(map)
+            .bindPopup(
+              `<strong>${profile.fullName}</strong><br>${profile.skillsOffered}`
+            );
+
+          // Store marker details
+          marker.profile = profile;
+          markers.push(marker);
+
+          // On click, redirect to profile.html with query parameters
+          marker.on('click', () => {
+            window.location.href = `profile.html?username=${profile.username}`;
+          });
+        });
+      }
+
+      // Try to get the user's location via Geolocation API
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const currentLat = position.coords.latitude;
+            const currentLon = position.coords.longitude;
+            initializeMap(currentLat, currentLon);
+          },
+          (error) => {
+            console.error('Error getting location:', error);
+            // If error, fall back to fixed coordinates
+            alert('Unable to access your location. Using default location.');
+            const currentLat = 43.6055; // Latitude of 50 Bristol Rd W, Mississauga, ON
+            const currentLon = -79.6968; // Longitude of 50 Bristol Rd W, Mississauga, ON
+            initializeMap(currentLat, currentLon);
+          }
+        );
+      } else {
+        alert('Geolocation is not supported by your browser. Using default location.');
+        const currentLat = 43.6055; // Latitude of 50 Bristol Rd W, Mississauga, ON
+        const currentLon = -79.6968; // Longitude of 50 Bristol Rd W, Mississauga, ON
+        initializeMap(currentLat, currentLon);
+      }
+
+      // Function to filter markers based on skill
+      window.filterMarkers = function () {
+        const searchValue = document.getElementById('skill-search').value.toLowerCase();
+
+        if (searchValue === "") {
+          // If the search value is empty, show all markers
+          markers.forEach((marker) => {
+            marker.addTo(map);
+          });
+        } else {
+          // Loop through all markers and display only those that match the selected category and skill search
+          markers.forEach((marker) => {
+            const profile = marker.profile;
+            const skillsToSearch = currentCategory === 'offered' ? profile.skillsOffered.toLowerCase() : profile.skillsWanted.toLowerCase();
+
+            if (skillsToSearch.includes(searchValue)) {
+              marker.addTo(map);
+            } else {
+              map.removeLayer(marker);
+            }
+          });
+        }
+      };
+
+      // Function to set the current category (skills offered or skills wanted)
+      window.setCategory = function (category) {
+        currentCategory = category;
+
+        document.getElementById('skills-offered').classList.remove('selected');
+        document.getElementById('skills-wanted').classList.remove('selected');
+
+        if (category === 'offered') {
+          document.getElementById('skills-offered').classList.add('selected');
+        } else {
+          document.getElementById('skills-wanted').classList.add('selected');
+        }
+
+        // Re-run the filter to update the markers
+        filterMarkers();
+      };
+    });
+  </script>
+</body>
+</html>

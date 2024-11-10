@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home | Skill Exchange Platform</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="description" content="Connect and exchange skills with individuals around the world. Join Skill Exchange to learn and teach new skills efficiently and effectively.">
+  <style>
+    :root {
+      --primary-color: #1e1e1e;
+      --secondary-color: #ffffff;
+      --accent-color: #ff6f61;
+      --text-color: #333333;
+      --background-color: #ffffff;
+      --button-border-color: #b71c1c;
+      --button-hover-bg: #b71c1c;
+      --button-hover-text: #ffffff;
+      --line-color: rgba(180, 37, 37, 0.911); /* Updated to red tint */
+      --circle-color: #e4e3e3; /* Soft gray for the circle */
+      --nav-height: 60px; /* Fixed navigation height */
+    }
+    
+    /* Prevent scrolling */
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      overflow: hidden; /* Prevent scrolling */
+    }
+    
+    /* Navigation Bar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--secondary-color);
+      padding: 0 30px;
+      height: var(--nav-height);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    nav .logo a {
+      color: var(--primary-color);
+      font-weight: bold;
+      font-size: 24px;
+      text-decoration: none;
+    }
+    
+    nav .menu-icon {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    
+    nav .menu-icon .bar {
+      width: 25px;
+      height: 3px;
+      background-color: var(--primary-color);
+      margin: 4px 0;
+    }
+    
+    nav .nav-links {
+      display: flex;
+      align-items: center;
+    }
+    
+    nav .nav-links a {
+      color: var(--primary-color);
+      font-weight: bold;
+      margin-left: 20px;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    nav .nav-links a:hover {
+      color: var(--accent-color);
+    }
+    
+    @media (max-width: 768px) {
+      nav .menu-icon {
+        display: flex;
+      }
+    
+      nav .nav-links {
+        display: flex; /* Changed from display: none; to display: flex; */
+        flex-direction: column;
+        position: absolute;
+        top: var(--nav-height);
+        right: 15px;
+        background-color: var(--secondary-color);
+        width: 200px;
+        border-radius: 8px;
+        padding: 10px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        z-index: 999;
+      }
+    
+      nav .nav-links.show {
+        max-height: 500px;
+        opacity: 1;
+      }
+    
+      nav .nav-links a {
+        margin: 10px 0;
+        text-align: center;
+      }
+    }
+    
+    /* Hero Section */
+    .hero {
+      background-color: var(--secondary-color);
+      padding: 10px 40px; /* Reduced top padding */
+      text-align: left;
+      position: relative;
+      display: flex;
+      align-items: flex-start; /* Align items to the top */
+      justify-content: flex-start;
+      height: calc(100vh - var(--nav-height)); /* Full viewport height minus nav height */
+      box-sizing: border-box;
+      overflow: hidden; /* Prevent internal overflow */
+    }
+    
+    .circle-background {
+      position: absolute;
+      top: 58%; /* Adjusted from 65% to move up */
+      right: 20%;
+      width: 300px;
+      height: 300px;
+      background-color: rgba(228, 227, 227, 0.9); /* Increased opacity */
+      border-radius: 50%;
+      border: 5px solid #ffffff; /* Added ring with matching color */
+      transform: translate(50%, -50%);
+      z-index: 0;
+    }
+    
+    .hero-content {
+      z-index: 2;
+      max-width: 500px;
+      text-align: left;
+      margin-top: 20px; /* Reduced margin-top to move content up */
+      margin-right: 50px;
+    }
+    
+    .hero-image {
+      position: absolute;
+      top: 25%; /* Adjusted from 35% to move up */
+      right: 5%;
+      width: 80%;
+      max-width: 800px;
+      opacity: 0.9;
+      z-index: 1;
+    }
+    
+    .site-title {
+      font-size: 72px; /* Updated font size */
+      font-family: 'Roboto', serif;
+      color: #b71c1c; /* Changed to match red theme */
+      margin-bottom: 15px; /* Reduced margin-bottom */
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    
+    .site-description {
+      font-size: 16px; /* Increased font size for readability */
+      color: #666;
+      max-width: 400px;
+      margin: 0 0 20px 0; /* Reduced bottom margin */
+      line-height: 1.6;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      padding: 10px 20px;
+      color: var(--button-border-color);
+      border: 2px solid var(--button-border-color);
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: 'Open Sans', sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+      text-decoration: none;
+      background-color: white;
+    }
+    
+    .cta-button:hover {
+      background-color: var(--button-hover-bg);
+      color: var(--button-hover-text);
+    }
+    
+    /* SVG Curved Lines with Moving Gradient */
+    .curved-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .curved-line path {
+      fill: none;
+      stroke-width: 2; /* Consistent stroke width */
+      stroke: var(--line-color);
+      stroke-linecap: round;
+      stroke: url(#moving-gradient); /* Apply animated gradient stroke */
+    }
+
+    @keyframes move-gradient {
+      0% { offset: 0; }
+      100% { offset: 1; }
+    }
+
+    #moving-gradient {
+      animation: move-gradient 3s linear infinite;
+    }
+
+    @media (max-width: 768px) {
+      .site-title {
+        font-size: 48px; /* Adjusted for smaller screens */
+      }
+
+      .site-description {
+        font-size: 16px;
+        max-width: 100%;
+      }
+      
+      .cta-button {
+        font-size: 16px;
+        padding: 10px 20px;
+        width: 150px;
+      }
+      
+      .hero-image {
+        width: 60%;
+        top: 10px;
+        right: 0;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .hero {
+        padding: 10px 20px; /* Further reduced padding */
+        height: calc(100vh - var(--nav-height)); /* Maintain full height */
+        justify-content: center;
+        text-align: center;
+        align-items: center; /* Center vertically */
+      }
+      
+      .site-title {
+        font-size: 48px;
+      }
+      
+      .site-description {
+        font-size: 14px;
+        max-width: 100%;
+      }
+      
+      .cta-button {
+        font-size: 16px;
+        padding: 10px 20px;
+      }
+      
+      .hero-image {
+        display: none;
+      }
+      
+      .circle-background {
+        width: 200px;
+        height: 200px;
+        top: 40%;
+        right: 15%;
+      }
+    }
+    
+    /* Accessibility Focus Styles */
+    a.cta-button:focus, button:focus {
+      outline: 2px dashed var(--accent-color);
+      outline-offset: 4px;
+    }
+  </style>
+</head>
+<body class="homepage">
+  <nav>
+    <div class="logo">
+      <a href="index.html">Skill Exchange</a>
+    </div>
+    <div class="menu-icon" onclick="toggleMenu()" aria-label="Toggle navigation menu" tabindex="0">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <a href="register.html">Register</a>
+      <a href="login.html">Login</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <!-- Circle background element -->
+    <div class="circle-background"></div>
+    
+    <img src="couch.png" alt="Skill Exchange Illustration" class="hero-image">
+    <div class="hero-content">
+      <h1 class="site-title">Skill Exchange</h1>
+      <p class="site-description">
+        Welcome to Skill Exchange, your premier platform to connect with like-minded individuals eager to share and acquire new skills. Whether you're looking to teach your expertise or learn something new, our community-driven approach ensures that you find the perfect match to help you grow both personally and professionally. Join us today and start your journey towards continuous learning and development.
+      </p>
+      <a href="register.html" class="cta-button" aria-label="Get Started with Skill Exchange">Get Started</a>
+    </div>
+  </section>
+
+  <!-- SVG Curved Lines with Moving Gradient -->
+  <svg class="curved-line" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="moving-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:rgba(218, 197, 197, 0.4); stop-opacity:1" />
+        <stop offset="50%" style="stop-color:rgba(255, 255, 255, 0.7); stop-opacity:1" />
+        <stop offset="100%" style="stop-color:rgba(207, 187, 187, 0.4); stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    
+    <!-- First line: bottom right to top left -->
+    <path d="M100,100 Q12,-43 -10, 25" stroke="url(#moving-gradient)" />
+
+    <!-- Second line: top right to bottom left -->
+    <path d="M100,10 Q70,130 0,140" stroke="url(#moving-gradient)" />
+  </svg>
+
+  <script>
+    function toggleMenu() {
+      var navLinks = document.getElementById("navLinks");
+      navLinks.classList.toggle("show");
+    }
+
+    document.querySelector('.menu-icon').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        toggleMenu();
+        e.preventDefault();
+      }
+    });
+
+    // Ensure the menu is closed on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      var navLinks = document.getElementById("navLinks");
+      navLinks.classList.remove("show");
+    });
+  </script>
+</body>
+</html>
