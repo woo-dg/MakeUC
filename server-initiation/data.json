@@ -1,0 +1,150 @@
+[
+  {
+    "username": "tutti",
+    "password": "poop",
+    "profile": {
+      "fullName": "Dave Grewal ",
+      "location": "Mississauga ",
+      "latitude": 43.5896231,
+      "longitude": -79.6443879,
+      "skillsOffered": "Coding, Math",
+      "skillsWanted": "English ",
+      "availability": "Tuesdays, Mondays",
+      "contactPreference": "Email",
+      "bio": "Willing to tutor at rates starting at 25 dollars"
+    }
+  },
+  {
+    "username": "Monkey_man",
+    "password": "life@2023!",
+    "profile": {
+      "fullName": "Rishy Grewal",
+      "location": "546 Denburgh Drive",
+      "latitude": null,
+      "longitude": null,
+      "skillsOffered": "AAA",
+      "skillsWanted": "BABABBBBBBBBBBBBAAAAAAAAAA",
+      "availability": "W",
+      "contactPreference": "Email",
+      "bio": "NGGG"
+    }
+  },
+  {
+    "username": "2018",
+    "password": "anything",
+    "profile": {
+      "fullName": "da",
+      "latitude": 43.2573529,
+      "longitude": -79.8675813,
+      "skillsOffered": "jda",
+      "skillsWanted": "hda",
+      "availability": "bfa",
+      "bio": "fa"
+    }
+  },
+  {
+    "username": "a",
+    "password": "a",
+    "profile": {
+      "fullName": "",
+      "location": "",
+      "latitude": null,
+      "longitude": null,
+      "skillsOffered": "",
+      "skillsWanted": "",
+      "availability": "",
+      "contactPreference": "",
+      "bio": ""
+    }
+  },
+  {
+    "username": "retro",
+    "password": "poop",
+    "profile": {
+      "fullName": "Dave Grewal ",
+      "location": "Mississauga ",
+      "latitude": 43.5896231,
+      "longitude": -79.6443879,
+      "skillsOffered": "Coding, Math",
+      "skillsWanted": "English",
+      "availability": "Tuesdays, Mondays",
+      "contactPreference": "Email",
+      "bio": "charging 25 per hour "
+    }
+  },
+  {
+    "username": "mgrewal2018@gmail.com",
+    "password": "what",
+    "profile": {
+      "fullName": "mon",
+      "location": "546 Desborough Drive ",
+      "latitude": 43.5942115,
+      "longitude": -79.6646284,
+      "skillsOffered": "english, math ",
+      "skillsWanted": "guitar ",
+      "availability": "Evenings ",
+      "contactPreference": "Email",
+      "bio": "good at teaching "
+    }
+  },
+  {
+    "username": "stink monk",
+    "password": "skunk",
+    "profile": {
+      "fullName": "Ri",
+      "location": "Shy",
+      "latitude": -3.6081923,
+      "longitude": 33.5027803,
+      "skillsOffered": "SI",
+      "skillsWanted": "BI",
+      "availability": "SKIBIDI",
+      "contactPreference": "Email",
+      "bio": "SIGMA"
+    }
+  },
+  {
+    "username": "tutti ",
+    "password": "poop",
+    "profile": {
+      "fullName": "",
+      "location": "",
+      "latitude": null,
+      "longitude": null,
+      "skillsOffered": "",
+      "skillsWanted": "",
+      "availability": "",
+      "contactPreference": "",
+      "bio": ""
+    }
+  },
+  {
+    "username": "tingatinga",
+    "password": "poop",
+    "profile": {
+      "fullName": "Dave",
+      "location": "Grewal",
+      "latitude": 50.9310915,
+      "longitude": 5.328329,
+      "skillsOffered": "Dhruv",
+      "skillsWanted": "Shukla",
+      "availability": "Tuesdays, Mondays",
+      "contactPreference": "Messaging",
+      "bio": "i love niggas "
+    }
+  },
+  {
+    "username": "hi",
+    "password": "hi",
+    "profile": {
+      "fullName": "",
+      "location": "",
+      "latitude": null,
+      "longitude": null,
+      "skillsOffered": "",
+      "skillsWanted": "",
+      "availability": "",
+      "contactPreference": "",
+      "bio": ""
+    }
+  }
+]
