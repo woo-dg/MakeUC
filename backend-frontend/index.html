@@ -352,6 +352,12 @@
       }
     });
 
+    // Ensure the menu is closed on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      var navLinks = document.getElementById("navLinks");
+      navLinks.classList.remove("show");
+    });
+
   </script>
 </body>
 </html>
